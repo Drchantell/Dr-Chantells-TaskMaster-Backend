@@ -37,6 +37,10 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "A user with this email already exists." });
     }
 
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Server error while registering user." });
   }
 });

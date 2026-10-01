@@ -24,6 +24,10 @@ router.post("/", async (req, res) => {
 
     res.status(201).json(project);
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Server error while creating project." });
   }
 });
@@ -81,6 +85,10 @@ router.put("/:id", async (req, res) => {
     await project.save();
     res.json(project);
   } catch (error) {
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ message: error.message });
+    }
+
     res.status(500).json({ message: "Server error while updating project." });
   }
 });
