@@ -15,13 +15,20 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    const existingUser = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+
+    const existingUser = await User.findOne({ email: normalizedEmail });
 
     if (existingUser) {
       return res.status(400).json({ message: "A user with this email already exists." });
     }
 
-    const user = new User({ username, email, password });
+    const user = new User({
+      username: username.trim(),
+      email: normalizedEmail,
+      password,
+    });
+
     await user.save();
 
     res.status(201).json({
@@ -53,7 +60,8 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Email and password are required." });
     }
 
-    const user = await User.findOne({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password." });
