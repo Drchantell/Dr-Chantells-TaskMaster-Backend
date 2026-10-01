@@ -1,5 +1,18 @@
 require("dotenv").config();
 
+const requiredEnvVars = ["MONGO_URI", "JWT_SECRET"];
+
+const missingEnvVars = requiredEnvVars.filter(
+  (name) => !process.env[name] || !process.env[name].trim()
+);
+
+if (missingEnvVars.length > 0) {
+  console.error(
+    `Missing required environment variable(s): ${missingEnvVars.join(", ")}`
+  );
+  process.exit(1);
+}
+
 const express = require("express");
 const connectDB = require("./config/db");
 const userRoutes = require("./routes/api/userRoutes");
@@ -24,11 +37,16 @@ app.use((req, res) => {
 });
 
 const startServer = async () => {
-  await connectDB();
+  try {
+    await connectDB();
 
-  app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-  });
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Server failed to start:", error.message);
+    process.exit(1);
+  }
 };
 
 startServer();
